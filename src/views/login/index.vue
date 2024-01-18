@@ -2,9 +2,34 @@
   <div class="login-container">
     <div class="logo" />
     <div class="form">
-      <h1>登录</h1>
+      <h1>手机号登录</h1>
       <el-card shadow="never" class="login-card">
         <!--登录表单-->
+        <el-form ref="form" :model="form" :rules="rules">
+          <el-form-item prop="mobile">
+            <el-input
+              v-model.trim="form.mobile"
+              placeholder="请输入手机号"
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model.trim="form.password"
+              show-password
+              placeholder="请输入密码"
+            />
+          </el-form-item>
+          <el-form-item prop="isAgree">
+            <el-checkbox v-model="form.isAgree">用户平台使用协议</el-checkbox>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              style="width: 350px"
+              @click="submit"
+            >登录</el-button>
+          </el-form-item>
+        </el-form>
       </el-card>
     </div>
   </div>
@@ -12,7 +37,64 @@
 
 <script>
 export default {
-  name: 'Login'
+  name: 'Login',
+  data() {
+    return {
+      // 表单绑定数据
+      form: {
+        mobile: '',
+        password: '',
+        isAgree: false
+      },
+      // 表单校验规则
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^1[3-9]\d{9}$/,
+            message: '手机号格式不正确',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            min: 6,
+            max: 16,
+            message: '密码长度应该为6-16位之间',
+            trigger: 'blur'
+          }
+        ],
+        isAgree: [
+          {
+            validator: (rule, value, callback) => {
+              // 当前的规则
+              // value 当前v-mode所绑定的值
+              // callback之必须要执行的函数  promise resove reject
+              // callback()
+              // callback(new Error("您当前的规则"))
+              // rule规则
+              // value检查的数据 true/false
+              // callback 函数 执行这个函数
+              // 成功执行callback 失败也执行callback(错误对象 new Error(错误信息))
+              value ? callback() : callback(new Error('没有勾选用户平台协议'))
+            }
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    submit() {
+      // 校验整个表单
+      this.$refs.form.validate((valid) => {
+        // if (!valid) return
+        if (valid) {
+          // 执行登录相关的操作
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -51,7 +133,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 176px;
+    padding-left: 100px;
     .el-card {
       border: none;
       padding: 0;
@@ -64,7 +146,8 @@ export default {
       width: 350px;
       height: 44px;
       .el-input__inner {
-        background: #f4f5fb;
+        // background: #f4f5fb;
+        background: #fff;
       }
     }
     .el-checkbox {
