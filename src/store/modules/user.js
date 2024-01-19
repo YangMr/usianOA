@@ -1,12 +1,8 @@
 import { setToken, getToken, removeToken } from '@/utils/auth'
-
+import { loginApi } from '@/api/user'
 const state = {
   token: getToken()
 }
-
-// const getters = {
-//   token: (state) => state.token
-// }
 
 const mutations = {
   // 设置token
@@ -22,8 +18,11 @@ const mutations = {
 }
 
 const actions = {
-  login(context, payload) {
-    context.commit('setToken', '123456')
+  // 登录方法
+  async login(context, payload) {
+    delete payload.isAgree
+    const token = await loginApi(payload)
+    context.commit('setToken', token)
   }
 }
 

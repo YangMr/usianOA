@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 
 // axios实例
 const service = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.VUE_APP_BASE_API,
   timeout: 10000
 })
 

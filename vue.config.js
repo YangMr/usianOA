@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   // lintOnSave: process.env.NODE_ENV === 'development', // 是否开启eslint
@@ -38,13 +38,10 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api': {
-        target: 'https://heimahr.itheima.net',
+      [process.env.VUE_APP_BASE_API]: {
+        // target: 'https://heimahr.itheima.net',
+        target: process.env.VUE_APP_BASE_URL,
         changeOrigin: true
-        // pathRewrite: {
-        //   // 路径重写
-        //   '^/dev-api': ''
-        // }
       }
     }
     // before: require('./mock/mock-server.js')

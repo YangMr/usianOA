@@ -25,11 +25,6 @@
               style="width: 350px"
               @click="submit"
             >登录</el-button>
-            <el-button
-              type="primary"
-              style="width: 350px"
-              @click="test"
-            >test</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -38,16 +33,15 @@
 </template>
 
 <script>
-import service from '@/utils/request'
 export default {
   name: 'Login',
   data() {
     return {
       // 表单绑定数据
       form: {
-        mobile: '',
-        password: '',
-        isAgree: false
+        mobile: process.env.NODE_ENV === 'development' ? '13800000002' : '',
+        password: process.env.NODE_ENV === 'development' ? 'hm#qd@23!' : '',
+        isAgree: process.env.NODE_ENV === 'development'
       },
       // 表单校验规则
       rules: {
@@ -71,15 +65,6 @@ export default {
         isAgree: [
           {
             validator: (rule, value, callback) => {
-              // 当前的规则
-              // value 当前v-mode所绑定的值
-              // callback之必须要执行的函数  promise resove reject
-              // callback()
-              // callback(new Error("您当前的规则"))
-              // rule规则
-              // value检查的数据 true/false
-              // callback 函数 执行这个函数
-              // 成功执行callback 失败也执行callback(错误对象 new Error(错误信息))
               value ? callback() : callback(new Error('没有勾选用户平台协议'))
             }
           }
@@ -90,46 +75,16 @@ export default {
   methods: {
     submit() {
       // 校验整个表单
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate(async(valid) => {
         // if (!valid) return
         if (valid) {
           // 执行登录相关的操作
-          this.$store.dispatch('user/login', this.form)
-        }
-      })
-    },
-    test() {
-      service({
-        // url: 'https://heimahr.itheima.net/api/sys/login',
-        url: '/sys/login',
-        method: 'POST',
-        data: {
-          mobile: '13800000002',
-          password: 'hm#qd@23!'
-        }
-      })
-        .then((res) => {
-          console.log(res)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+          await this.$store.dispatch('user/login', this.form)
 
-      service({
-        // url: 'https://heimahr.itheima.net/api/sys/login',
-        url: '/sys/login',
-        method: 'POST',
-        data: {
-          mobile: '13800000002',
-          password: 'hm#qd@23!'
+          // 跳转到主页
+          this.$router.push('/')
         }
       })
-        .then((res) => {
-          console.log(res)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     }
   }
 }
