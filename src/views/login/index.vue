@@ -7,10 +7,7 @@
         <!--登录表单-->
         <el-form ref="form" :model="form" :rules="rules">
           <el-form-item prop="mobile">
-            <el-input
-              v-model.trim="form.mobile"
-              placeholder="请输入手机号"
-            />
+            <el-input v-model.trim="form.mobile" placeholder="请输入手机号" />
           </el-form-item>
           <el-form-item prop="password">
             <el-input
@@ -28,6 +25,11 @@
               style="width: 350px"
               @click="submit"
             >登录</el-button>
+            <el-button
+              type="primary"
+              style="width: 350px"
+              @click="test"
+            >test</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -36,6 +38,7 @@
 </template>
 
 <script>
+import service from '@/utils/request'
 export default {
   name: 'Login',
   data() {
@@ -91,8 +94,42 @@ export default {
         // if (!valid) return
         if (valid) {
           // 执行登录相关的操作
+          this.$store.dispatch('user/login', this.form)
         }
       })
+    },
+    test() {
+      service({
+        // url: 'https://heimahr.itheima.net/api/sys/login',
+        url: '/sys/login',
+        method: 'POST',
+        data: {
+          mobile: '13800000002',
+          password: 'hm#qd@23!'
+        }
+      })
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+
+      service({
+        // url: 'https://heimahr.itheima.net/api/sys/login',
+        url: '/sys/login',
+        method: 'POST',
+        data: {
+          mobile: '13800000002',
+          password: 'hm#qd@23!'
+        }
+      })
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }
