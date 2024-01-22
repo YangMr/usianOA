@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'has-logo': showLogo }">
+  <div :class="{ 'has-logo': showLogo }" style="width: 180px">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
@@ -34,6 +34,8 @@ export default {
   computed: {
     ...mapGetters(['sidebar']),
     routes() {
+      // this.$router.options.routes 获取所有的路由信息
+      console.log('routes', this.$router.options.routes)
       return this.$router.options.routes
     },
     activeMenu() {

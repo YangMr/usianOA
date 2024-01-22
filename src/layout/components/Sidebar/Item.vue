@@ -1,6 +1,7 @@
 <script>
 export default {
   name: 'MenuItem',
+  // 函数式组件
   functional: true,
   props: {
     icon: {
@@ -17,15 +18,17 @@ export default {
     const vnodes = []
 
     if (icon) {
+      // element 自带的图标
       if (icon.includes('el-icon')) {
         vnodes.push(<i class={[icon, 'sub-el-icon']} />)
       } else {
+        // svg
         vnodes.push(<svg-icon icon-class={icon} />)
       }
     }
 
     if (title) {
-      vnodes.push(<span slot="title">{title}</span>)
+      vnodes.push(<span slot='title'>{title}</span>)
     }
     return vnodes
   }
