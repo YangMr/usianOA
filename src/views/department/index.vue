@@ -2,11 +2,12 @@
   <div class="container">
     <div class="app-container">
       <el-tree
+        :expand-on-click-node="false"
         :data="departmentList"
         :props="defaultProps"
         :default-expand-all="true"
       >
-        <template v-slot="{ node, data }">
+        <template v-slot="{ data }">
           <el-row
             type="flex"
             align="middle"
@@ -16,7 +17,7 @@
             <el-col>{{ data.name }}</el-col>
             <el-col style="text-align: right" :span="4">
               <span class="tree-manager">{{ data.managerName }}</span>
-              <el-dropdown @command="handleCommand">
+              <el-dropdown @command="handleCommand($event, data.id)">
                 <span class="el-dropdown-link">
                   操作<i class="el-icon-arrow-down el-icon--right" />
                 </span>
@@ -31,47 +32,47 @@
         </template>
       </el-tree>
     </div>
+    <!-- .sync 会直接监听子组件的 update:show-dialog -->
+    <add-dept
+      :current-node-id="currentNodeId"
+      :show-dialog.sync="showDialog"
+      @updateDepartment="getDepartment"
+    />
   </div>
 </template>
 <script>
 import { getDepartmentApi } from '@/api/department'
 import { transListToTreeData } from '@/utils'
+import addDept from './components/add-dept.vue'
 export default {
   name: 'Department',
+  components: {
+    addDept
+  },
   data() {
     return {
-      departmentList: [
-        // {
-        //   name: '积云教育',
-        //   managerName: '管理员',
-        //   child: [
-        //     {
-        //       name: '人力资源',
-        //       managerName: '张三'
-        //     },
-        //     {
-        //       name: '研发中心',
-        //       managerName: '李四'
-        //     },
-        //     {
-        //       name: '市场中心',
-        //       managerName: '王五'
-        //     }
-        //   ]
-        // }
-      ],
+      departmentList: [],
+      showDialog: false,
       defaultProps: {
         label: 'name',
         children: 'children'
-      }
+      },
+      currentNodeId: null
     }
   },
   created() {
     this.getDepartment()
   },
   methods: {
-    handleCommand(command) {
-      alert(command)
+    // 点击下拉菜单项触发的方法
+    handleCommand(command, id) {
+      switch (command) {
+        case 'add':
+          this.currentNodeId = id
+          this.showDialog = true
+
+          break
+      }
     },
     // 获取部门列表方法
     async getDepartment() {
