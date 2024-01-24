@@ -12,3 +12,16 @@ export function getRoleListApi(params) {
     params
   })
 }
+
+/**
+ * 新增-角色
+ * @param {*} data
+ * @returns
+ */
+export function addRoleApi(data) {
+  return service({
+    url: '/sys/role',
+    method: 'POST',
+    data
+  })
+}

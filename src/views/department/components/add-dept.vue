@@ -1,5 +1,10 @@
 <template>
-  <el-dialog title="新增部门" :visible.sync="showDialog" @close="close">
+  <el-dialog
+    :before-close="close"
+    title="新增部门"
+    :visible.sync="showDialog"
+    @close="close"
+  >
     <el-form
       ref="dialogForm"
       :rules="rules"
