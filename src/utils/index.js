@@ -134,3 +134,31 @@ export function transListToTreeData(data, rootValue) {
   })
   return arr
 }
+
+// export function transListToTreeData(data) {
+//   // 1. 拿到一级数据
+//   const parent = data.filter((item) => item.pid === 0)
+//   console.log('一级数据', parent)
+//   // 2. 拿到所有的非一级数据
+//   const children = data.filter((item) => item.pid !== 0)
+//   console.log('非一级数据', children)
+
+//   function tree(parent, children) {
+//     parent.forEach((p) => {
+//       children.forEach((c) => {
+//         if (c.pid === p.id) {
+//           tree([c], children)
+//           if (p.children) {
+//             p.children.push(c)
+//           } else {
+//             p.children = [c]
+//           }
+//         }
+//       })
+//     })
+//   }
+
+//   tree(parent, children)
+//   console.log('p', parent)
+//   return parent
+// }

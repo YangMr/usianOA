@@ -65,7 +65,9 @@
 import {
   getDepartmentApi,
   getManagerListApi,
-  addDepartment
+  addDepartment,
+  getDepartmentDetailApi,
+  updateDepartmentApi
 } from '@/api/department'
 export default {
   props: {
@@ -105,7 +107,14 @@ export default {
           {
             validator: async(rule, value, callback) => {
               // 1. 获取当前部门的列表
-              const departmentList = await getDepartmentApi()
+              let departmentList = await getDepartmentApi()
+
+              if (this.deptForm.id) {
+                departmentList = departmentList.filter(
+                  (item) => item.name !== value
+                )
+              }
+
               // 2. 判断当前输入的部门名称是否存在于部门列表中
               if (departmentList.some((item) => item.name === value)) {
                 callback(new Error('部门中已经有该名称了'))
@@ -130,8 +139,13 @@ export default {
           {
             validator: async(rule, value, callback) => {
               // 1. 获取当前部门的列表
-              const departmentList = await getDepartmentApi()
+              let departmentList = await getDepartmentApi()
               console.log('departmentList', departmentList)
+              if (this.deptForm.id) {
+                departmentList = departmentList.filter(
+                  (item) => item.code !== value
+                )
+              }
               // 2. 判断当前输入的部门名称是否存在于部门列表中
               // 3. 如果存在，提示用户部门名称已存在
               // 4. 如果不存在，表单校验通过
@@ -167,6 +181,20 @@ export default {
   },
   methods: {
     close() {
+      // 关闭的时候重新设置表单
+      this.deptForm = {
+        // 部门名称
+        name: '',
+        // 部门编码
+        code: '',
+        // 部门负责人
+        managerId: '',
+        // 部门介绍
+        introduce: '',
+        // 父部门id
+        pid: ''
+      }
+
       // 重置表单
       this.$refs.dialogForm.resetFields()
       // 单向数据流
@@ -181,22 +209,32 @@ export default {
       // 1. 校验整个表单
       // 2. 拿到父部门的id
       this.$refs.dialogForm.validate(async(valid) => {
-        console.log('valid', valid)
         if (valid) {
-          this.deptForm.pid = this.currentNodeId
-
-          // 3. 调用接口
-          await addDepartment(this.deptForm)
+          let msg = '新增'
+          if (this.deptForm.id) {
+            // 编辑
+            await updateDepartmentApi(this.currentNodeId, this.deptForm)
+            msg = '编辑'
+          } else {
+            // 新增
+            this.deptForm.pid = this.currentNodeId
+            // 3. 调用接口
+            await addDepartment(this.deptForm)
+          }
 
           // 4. 重置表单,并关闭弹窗
           this.close()
 
-          this.$message.success('新增部门成功')
+          this.$message.success(msg + '部门成功')
 
           // 5. 通知父组件重新获取部门列表
           this.$emit('updateDepartment')
         }
       })
+    },
+    async getDepartmentDetail() {
+      const res = await getDepartmentDetailApi(this.currentNodeId)
+      this.deptForm = res
     }
   }
 }

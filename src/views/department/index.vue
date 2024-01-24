@@ -34,6 +34,7 @@
     </div>
     <!-- .sync 会直接监听子组件的 update:show-dialog -->
     <add-dept
+      ref="dept"
       :current-node-id="currentNodeId"
       :show-dialog.sync="showDialog"
       @updateDepartment="getDepartment"
@@ -41,7 +42,7 @@
   </div>
 </template>
 <script>
-import { getDepartmentApi } from '@/api/department'
+import { getDepartmentApi, removeDepartmentApi } from '@/api/department'
 import { transListToTreeData } from '@/utils'
 import addDept from './components/add-dept.vue'
 export default {
@@ -70,16 +71,42 @@ export default {
         case 'add':
           this.currentNodeId = id
           this.showDialog = true
+          break
+        case 'edit':
+          // 1. 打开弹窗
+          this.showDialog = true
 
+          // 2.获取当前行的id
+          this.currentNodeId = id
+
+          // props 接受父组件传递数据 是同步还是异步操作
+          // 调用获取部门详情方法
+
+          // 3.调用获取部门详情方法
+          this.$nextTick(() => {
+            this.$refs.dept.getDepartmentDetail()
+          })
+          break
+        case 'remove':
+          // 调用删除方法
+          this.removeDepartment(id)
           break
       }
     },
     // 获取部门列表方法
     async getDepartment() {
       const res = await getDepartmentApi()
-      console.log('Res=>', res)
-      // console.log('res=>', transListToTreeData(res, 0))
       this.departmentList = transListToTreeData(res, 0)
+    },
+    // 删除部门方法
+    removeDepartment(id) {
+      this.$confirm('您确认要删除该部门吗').then(async() => {
+        await removeDepartmentApi(id)
+
+        // 提示消息
+        this.$message.success('删除部门成功')
+        this.getDepartment()
+      })
     }
   }
 }
