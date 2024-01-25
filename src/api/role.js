@@ -25,3 +25,29 @@ export function addRoleApi(data) {
     data
   })
 }
+
+/**
+ * 修改-角色
+ * @param {*} id
+ * @param {*} data
+ * @returns
+ */
+export function updateRoleInfoApi(id, data) {
+  return service({
+    url: `/sys/role/${id}`,
+    method: 'PUT',
+    data
+  })
+}
+
+/**
+ * 删除-角色
+ * @param {*} id
+ * @returns
+ */
+export function removeRoleApi(id) {
+  return service({
+    url: `/sys/role/${id}`,
+    method: 'DELETE'
+  })
+}

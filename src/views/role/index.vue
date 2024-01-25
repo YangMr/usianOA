@@ -12,19 +12,74 @@
       <!-- table -->
       <el-table :data="roleList" border style="width: 100%">
         <el-table-column type="index" align="center" label="序号" width="60" />
-        <el-table-column prop="name" align="center" width="200" label="角色" />
+        <el-table-column prop="name" align="center" width="200" label="角色">
+          <template v-slot="{ row }">
+            <el-input
+              v-if="row.isEdit"
+              v-model="row.editRow.name"
+              placeholder="请输入"
+              size="mini"
+            />
+            <span v-else>{{ row.name }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="state" align="center" width="200" label="启用">
           <template v-slot="{ row }">
             <!-- {{ row.state === 1 ? '已启用' : row.state === 0 ? '未启用' : '无' }} -->
-            {{ row.state | stateFilter }}
+            <el-switch
+              v-if="row.isEdit"
+              v-model="row.editRow.state"
+              :active-value="1"
+              :inactive-value="0"
+            />
+            <span v-else>{{ row.state | stateFilter }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="description" align="center" label="描述" />
+        <el-table-column prop="description" align="center" label="描述">
+          <template v-slot="{ row }">
+            <el-input
+              v-if="row.isEdit"
+              v-model="row.editRow.description"
+              placeholder="请输入"
+              size="mini"
+            />
+            <span v-else>{{ row.description }}</span>
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="操作">
-          <template>
-            <el-button type="text" size="mini">分配权限</el-button>
-            <el-button type="text" size="mini">编辑</el-button>
-            <el-button type="text" size="mini">删除</el-button>
+          <template v-slot="{ row }">
+            <!-- 编辑状态 -->
+            <template v-if="row.isEdit">
+              <el-button
+                type="primary"
+                size="mini"
+                @click="handleConfrimRole(row)"
+              >确定</el-button>
+              <el-button
+                size="mini"
+                @click="row.isEdit = false"
+              >取消</el-button>
+            </template>
+            <!-- 非编辑状态 -->
+            <template v-else>
+              <el-button type="text" size="mini">分配权限</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                @click="handleEdit(row)"
+              >编辑</el-button>
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @onConfirm="confirmDel(row.id)"
+              >
+                <el-button
+                  slot="reference"
+                  style="margin-left: 10px"
+                  type="text"
+                  size="mini"
+                >删除</el-button>
+              </el-popconfirm>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -92,7 +147,12 @@
   </div>
 </template>
 <script>
-import { getRoleListApi, addRoleApi } from '@/api/role'
+import {
+  getRoleListApi,
+  addRoleApi,
+  updateRoleInfoApi,
+  removeRoleApi
+} from '@/api/role'
 export default {
   name: 'Role',
   filters: {
@@ -139,6 +199,14 @@ export default {
         page: this.page,
         pagesize: this.pagesize
       })
+      res.rows.forEach((item) => {
+        this.$set(item, 'isEdit', false)
+        this.$set(item, 'editRow', {
+          name: item.name,
+          description: item.description,
+          state: item.state
+        })
+      })
       console.log('Res=>', res)
       this.roleList = res.rows
       this.total = res.total
@@ -170,6 +238,44 @@ export default {
       this.$refs.form.resetFields()
       // 关闭弹窗
       this.showDialog = false
+    },
+    // 打开行业编辑
+    handleEdit(row) {
+      this.$set(row, 'isEdit', true)
+
+      // 更新缓存数据
+      row.editRow.name = row.name
+      row.editRow.state = row.state
+      row.editRow.description = row.description
+    },
+    // 编辑方法
+    async handleConfrimRole(row) {
+      if (row.editRow.name && row.editRow.description) {
+        // 调用更新接口
+        await updateRoleInfoApi(row.id, { ...row.editRow, id: row.id })
+
+        // 信息提示
+        this.$message.success('更新角色成功')
+        // 让输入框隐藏, 让当前行所显示的数据是更新后的数据
+        Object.assign(row, {
+          ...row.editRow,
+          isEdit: false // 退出编辑模式
+        }) // 规避eslint的误判
+      } else {
+        this.$message.warning('角色和描述不能为空')
+      }
+    },
+    // 删除方法
+    async confirmDel(id) {
+      // 调用接口
+      await removeRoleApi(id)
+      // 提示删除成功
+      this.$message.success('删除角色成功')
+      // 判断删除的是不是最后一项数据, 如果是,则页码减1
+      console.log('this.roleList.length', this.roleList.length)
+      if (this.roleList.length === 1) this.page--
+      // 更新角色列表
+      this.getRoleList()
     }
   }
 }
