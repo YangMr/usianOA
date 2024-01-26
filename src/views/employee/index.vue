@@ -32,8 +32,11 @@
           </el-col>
           <el-col :span="8">
             <el-button type="primary" size="mini">添加员工</el-button>
-            <el-button size="mini">excel导入</el-button>
-            <el-button size="mini">excel导出</el-button>
+            <el-button
+              size="mini"
+              @click="showDialog = true"
+            >excel导入</el-button>
+            <el-button size="mini" @click="exportEmployee">excel导出</el-button>
           </el-col>
         </el-row>
         <!-- 表格 -->
@@ -49,11 +52,7 @@
               <span v-else class="username">{{ row.username?.charAt(2) }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            prop="username"
-            label="姓名"
-          />
+          <el-table-column align="center" prop="username" label="姓名" />
           <el-table-column
             prop="mobile"
             label="手机号"
@@ -77,21 +76,22 @@
               <span v-else>无</span>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            prop="departmentName"
-            label="部门"
-          />
-          <el-table-column
-            prop="timeOfEntry"
-            label="入职时间"
-            align="center"
-          />
+          <el-table-column align="center" prop="departmentName" label="部门" />
+          <el-table-column prop="timeOfEntry" label="入职时间" align="center" />
           <el-table-column align="center" width="280px" label="操作">
-            <template>
+            <template v-slot="{ row }">
               <el-button size="mini" type="text">查看</el-button>
               <el-button size="mini" type="text">角色</el-button>
-              <el-button size="mini" type="text">删除</el-button>
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @onConfirm="handleDelete(row.id)"
+              >
+                <el-button
+                  slot="reference"
+                  size="mini"
+                  type="text"
+                >删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -112,15 +112,27 @@
         </el-row>
       </div>
     </div>
+
+    <ImportExcel
+      :show-dialog.sync="showDialog"
+      @uploadSuccess="getEmployeList"
+    />
   </div>
 </template>
 <script>
 import { getDepartmentApi } from '@/api/department'
-import { getEmployeListApi } from '@/api/employee'
+import {
+  getEmployeListApi,
+  exportEmployeeApi,
+  removeEmployeeApi
+} from '@/api/employee'
 import { transListToTreeData } from '@/utils'
+import FileSaver from 'file-saver'
 import _ from 'lodash'
+import ImportExcel from './components/import-excel'
 export default {
   name: 'Employee',
+  components: { ImportExcel },
   data() {
     return {
       depts: [],
@@ -135,7 +147,8 @@ export default {
         departmentId: null
       },
       total: 0,
-      list: []
+      list: [],
+      showDialog: false
     }
   },
   created() {
@@ -176,7 +189,22 @@ export default {
     handleSearch: _.debounce(function() {
       this.queryParams.page = 1
       this.getEmployeList()
-    }, 300)
+    }, 300),
+    // 导出文件方法
+    async exportEmployee() {
+      // 获取流数据
+      const res = await exportEmployeeApi()
+      console.log('Res=>', res)
+      // 将文件流转化成文件并下载
+      FileSaver.saveAs(res, '员工信息表.xlsx')
+    },
+    // 删除员工
+    async handleDelete(id) {
+      await removeEmployeeApi(id)
+      if (this.list.length === 1 && this.queryParams.page > 1) { this.queryParams.page-- }
+      this.getEmployeList()
+      this.$message.success('删除员工成功')
+    }
   }
 }
 </script>
