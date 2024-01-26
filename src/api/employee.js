@@ -62,3 +62,42 @@ export function removeEmployeeApi(id) {
     method: 'DELETE'
   })
 }
+
+/**
+ * 新增-员工
+ * @param {*} data
+ * @returns
+ */
+export function addEmployeeApi(data) {
+  return service({
+    url: '/sys/user',
+    method: 'POST',
+    data
+  })
+}
+
+/**
+ * 获取-员工-基本信息
+ * @param {*} id
+ * @returns
+ */
+export function getEmployeeDetailApi(id) {
+  return service({
+    url: `/sys/user/${id}`,
+    method: 'GET'
+  })
+}
+
+/**
+ * 修改-员工-基本信息
+ * @param {*} id
+ * @param {*} data
+ * @returns
+ */
+export function updateEmployeeDetailApi(id, data) {
+  return service({
+    url: `/sys/user/${id}`,
+    method: 'PUT',
+    data
+  })
+}

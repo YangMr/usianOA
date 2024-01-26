@@ -31,7 +31,11 @@
             <el-button size="mini">群发通知</el-button>
           </el-col>
           <el-col :span="8">
-            <el-button type="primary" size="mini">添加员工</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="$router.push('/employee/detail')"
+            >添加员工</el-button>
             <el-button
               size="mini"
               @click="showDialog = true"
@@ -80,7 +84,11 @@
           <el-table-column prop="timeOfEntry" label="入职时间" align="center" />
           <el-table-column align="center" width="280px" label="操作">
             <template v-slot="{ row }">
-              <el-button size="mini" type="text">查看</el-button>
+              <el-button
+                size="mini"
+                type="text"
+                @click="handleRouter(row.id)"
+              >查看</el-button>
               <el-button size="mini" type="text">角色</el-button>
               <el-popconfirm
                 title="这是一段内容确定删除吗？"
@@ -201,9 +209,15 @@ export default {
     // 删除员工
     async handleDelete(id) {
       await removeEmployeeApi(id)
-      if (this.list.length === 1 && this.queryParams.page > 1) { this.queryParams.page-- }
+      if (this.list.length === 1 && this.queryParams.page > 1) {
+        this.queryParams.page--
+      }
       this.getEmployeList()
       this.$message.success('删除员工成功')
+    },
+    // 跳转到员工详情页
+    handleRouter(id) {
+      this.$router.push(`/employee/detail/${id}`)
     }
   }
 }
