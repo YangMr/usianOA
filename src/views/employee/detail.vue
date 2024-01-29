@@ -104,6 +104,7 @@
             <el-col :span="12">
               <el-form-item label="员工头像">
                 <!-- 图片上传组件 -->
+                <ImageUpload v-model="detailForm.staffPhoto" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -124,6 +125,7 @@
 </template>
 <script>
 import SelectTree from './components/select-tree.vue'
+import ImageUpload from './components/image-upload.vue'
 import {
   addEmployeeApi,
   getEmployeeDetailApi,
@@ -132,13 +134,14 @@ import {
 export default {
   name: 'Detail',
   components: {
-    SelectTree
+    SelectTree,
+    ImageUpload
   },
   data() {
     return {
       detailForm: {
         correctionTime: '',
-        departmentId: 3,
+        departmentId: null,
         formOfEmployment: '',
         mobile: '',
         staffPhoto: '',
