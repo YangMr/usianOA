@@ -89,7 +89,11 @@
                 type="text"
                 @click="handleRouter(row.id)"
               >查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button
+                size="mini"
+                type="text"
+                @click="handleRole(row.id)"
+              >角色</el-button>
               <el-popconfirm
                 title="这是一段内容确定删除吗？"
                 @onConfirm="handleDelete(row.id)"
@@ -125,6 +129,24 @@
       :show-dialog.sync="showDialog"
       @uploadSuccess="getEmployeList"
     />
+
+    <el-dialog title="分配角色" :visible.sync="roleDialog">
+      <el-checkbox-group v-model="roleIds">
+        <el-checkbox
+          v-for="(item, index) in roleList"
+          :key="index"
+          :label="item.id"
+        >{{ item.name }}</el-checkbox>
+      </el-checkbox-group>
+      <el-row type="flex" justify="center" align="middle" style="height: 80px">
+        <el-button
+          size="mini"
+          type="primary"
+          @click="handleAssignRole"
+        >确定</el-button>
+        <el-button size="mini" @click="roleDialog = false">取消</el-button>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -132,8 +154,11 @@ import { getDepartmentApi } from '@/api/department'
 import {
   getEmployeListApi,
   exportEmployeeApi,
-  removeEmployeeApi
+  removeEmployeeApi,
+  assignRoleApi,
+  getEmployeeDetailApi
 } from '@/api/employee'
+import { getEnableRoleListApi } from '@/api/role'
 import { transListToTreeData } from '@/utils'
 import FileSaver from 'file-saver'
 import _ from 'lodash'
@@ -156,7 +181,11 @@ export default {
       },
       total: 0,
       list: [],
-      showDialog: false
+      showDialog: false,
+      roleDialog: false,
+      roleList: [],
+      roleIds: [],
+      staffId: null
     }
   },
   created() {
@@ -218,6 +247,26 @@ export default {
     // 跳转到员工详情页
     handleRouter(id) {
       this.$router.push(`/employee/detail/${id}`)
+    },
+    // 打开弹窗, 显示已启用的角色列表
+    async handleRole(id) {
+      this.staffId = id
+      const res = await getEnableRoleListApi()
+
+      const { roleIds } = await getEmployeeDetailApi(this.staffId)
+
+      this.roleList = res
+      this.roleIds = roleIds
+      this.roleDialog = true
+    },
+    // 确定分配角色
+    async handleAssignRole() {
+      await assignRoleApi({
+        id: this.staffId,
+        roleIds: this.roleIds
+      })
+      this.$message.success('分配用户角色成功')
+      this.roleDialog = false
     }
   }
 }

@@ -101,3 +101,16 @@ export function updateEmployeeDetailApi(id, data) {
     data
   })
 }
+
+/**
+ * 分配-员工-角色
+ * @param {*} data
+ * @returns
+ */
+export function assignRoleApi(data) {
+  return service({
+    url: '/sys/user/assignRoles',
+    method: 'PUT',
+    data
+  })
+}

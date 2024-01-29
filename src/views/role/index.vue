@@ -62,7 +62,11 @@
             </template>
             <!-- 非编辑状态 -->
             <template v-else>
-              <el-button type="text" size="mini">分配权限</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                @click="handleGetPermission(row.id)"
+              >分配权限</el-button>
               <el-button
                 type="text"
                 size="mini"
@@ -144,6 +148,29 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog title="分配权限" :visible.sync="showPermissionDialog">
+      <el-tree
+        ref="permissionTree"
+        :data="permissionList"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="permissionIds"
+        :props="defaultProps"
+      />
+      <el-row type="flex" justify="center" align="middle">
+        <el-button
+          size="mini"
+          type="primary"
+          @click="submitPermission"
+        >确定</el-button>
+        <el-button
+          size="mini"
+          @click="showPermissionDialog = false"
+        >取消</el-button>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -151,8 +178,12 @@ import {
   getRoleListApi,
   addRoleApi,
   updateRoleInfoApi,
-  removeRoleApi
+  removeRoleApi,
+  getRoleDetailApi,
+  assignPremissionApi
 } from '@/api/role'
+import { getPermissionListApi } from '@/api/permission'
+import { transListToTreeData } from '@/utils'
 export default {
   name: 'Role',
   filters: {
@@ -186,7 +217,15 @@ export default {
       page: 1,
       pagesize: 3,
       total: 0,
-      showDialog: false
+      showDialog: false,
+      showPermissionDialog: false,
+      permissionList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      permissionIds: [],
+      roleId: ''
     }
   },
   created() {
@@ -276,6 +315,28 @@ export default {
       if (this.roleList.length === 1) this.page--
       // 更新角色列表
       this.getRoleList()
+    },
+    // 打开弹窗获取权限列表
+    async handleGetPermission(id) {
+      const res = await getPermissionListApi()
+      this.permissionList = transListToTreeData(res, 0)
+      this.roleId = id
+
+      const { permIds } = await getRoleDetailApi(this.roleId)
+      console.log('permIds', permIds)
+      this.permissionIds = permIds
+
+      this.showPermissionDialog = true
+    },
+    // 分配权限
+    async submitPermission() {
+      await assignPremissionApi({
+        id: this.roleId,
+        permIds: this.$refs.permissionTree.getCheckedKeys()
+      })
+
+      this.$message.success('角色分配权限成功')
+      this.showPermissionDialog = false
     }
   }
 }
