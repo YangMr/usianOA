@@ -1,8 +1,11 @@
 import { setToken, getToken, removeToken } from '@/utils/auth'
 import { loginApi, getProfileApi } from '@/api/user'
+import { constantRoutes, resetRouter } from '@/router'
 const state = {
   token: getToken(),
-  userInfo: {}
+  userInfo: {},
+  // 路由会转化成菜单
+  routes: constantRoutes
 }
 
 const mutations = {
@@ -19,6 +22,10 @@ const mutations = {
   // 设置user
   setUser(state, user) {
     state.userInfo = user
+  },
+  // 设置路由
+  setRoutes(state, routes) {
+    state.routes = [...state.routes, ...routes]
   }
 }
 
@@ -34,6 +41,7 @@ const actions = {
     const res = await getProfileApi()
     console.log('res=>', res)
     commit('setUser', res)
+    return res
   },
   // 退出登录
   logout(context) {
@@ -41,6 +49,10 @@ const actions = {
     context.commit('removeToken')
     // 清除用户信息
     context.commit('setUser', {})
+    // 重置路由
+    resetRouter()
+    // 强制刷新
+    location.reload()
   }
 }
 

@@ -4,6 +4,7 @@ import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 import store from './store'
+import { asyncRoutes } from './router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -26,11 +27,29 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       if (!store.getters.userId) {
-        await store.dispatch('user/getUserInfo')
-        console.log('store.getters.userId', store.getters.userId)
-      }
+        // 获取到当前用户拥有的权限
+        const { roles } = await store.dispatch('user/getUserInfo')
+        console.log('result=>', roles)
 
-      next()
+        // 匹配出当前用户拥有的路由
+        const filterRoutes = asyncRoutes.filter((item) => {
+          return roles.menus.includes(item.name)
+        })
+
+        store.commit('user/setRoutes', filterRoutes)
+
+        // 添加动态路由
+        router.addRoutes([
+          ...filterRoutes,
+          // 解决刷新跳转到404问题
+          { path: '*', redirect: '/404', hidden: true }
+        ])
+
+        // 解决刷新之后白屏问题
+        next(to.path)
+      } else {
+        next()
+      }
     }
   } else {
     // 没有token

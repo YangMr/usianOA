@@ -32,12 +32,13 @@ import variables from '@/styles/variables.scss'
 export default {
   components: { SidebarItem, Logo },
   computed: {
-    ...mapGetters(['sidebar']),
-    routes() {
-      // this.$router.options.routes 获取所有的路由信息
-      console.log('routes', this.$router.options.routes)
-      return this.$router.options.routes
-    },
+    ...mapGetters(['sidebar', 'routes']),
+    // routes() {
+    // this.$router.options.routes 获取所有的路由信息
+    // console.log('routes', this.$router.options.routes)
+    // return this.$router.options.routes
+    // return this.$store.getters.routes
+    // },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route

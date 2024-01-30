@@ -39,6 +39,7 @@ import socialRouter from './modules/social'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+// 静态路由
 export const constantRoutes = [
   {
     path: '/login',
@@ -56,6 +57,7 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
+    name: 'Layout',
     children: [
       {
         path: 'dashboard',
@@ -64,8 +66,14 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard' }
       }
     ]
-  },
+  }
 
+  // // 404 page must be placed at the end !!!
+  // { path: '*', redirect: '/404', hidden: true }
+]
+
+// 动态路由
+export const asyncRoutes = [
   departmentRouter,
   roleRouter,
   employeeRouter,
@@ -73,10 +81,7 @@ export const constantRoutes = [
   attendanceRouter,
   approvalRouter,
   salaryRouter,
-  socialRouter,
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  socialRouter
 ]
 
 const createRouter = () =>
@@ -92,8 +97,7 @@ const router = createRouter()
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+  router.options.routes = []
 }
-
-console.log('router.options.routes', router.options.routes)
 
 export default router
