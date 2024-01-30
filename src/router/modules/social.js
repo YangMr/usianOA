@@ -2,7 +2,8 @@ import layout from '@/layout'
 export default {
   path: '/social',
   component: layout,
-  name: 'social',
+  // name: 'social',
+  ident: 'social',
   children: [
     {
       path: '',

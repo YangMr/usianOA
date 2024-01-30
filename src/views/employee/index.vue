@@ -32,6 +32,7 @@
           </el-col>
           <el-col :span="8">
             <el-button
+              v-permission="'add-employee'"
               type="primary"
               size="mini"
               @click="$router.push('/employee/detail')"
@@ -85,11 +86,13 @@
           <el-table-column align="center" width="280px" label="操作">
             <template v-slot="{ row }">
               <el-button
+                v-permission="'edit-employee'"
                 size="mini"
                 type="text"
                 @click="handleRouter(row.id)"
               >查看</el-button>
               <el-button
+                v-permission="'assign-employee'"
                 size="mini"
                 type="text"
                 @click="handleRole(row.id)"
@@ -100,6 +103,7 @@
               >
                 <el-button
                   slot="reference"
+                  v-permission="'delete-employee'"
                   size="mini"
                   type="text"
                 >删除</el-button>

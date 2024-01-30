@@ -1,6 +1,7 @@
 import { setToken, getToken, removeToken } from '@/utils/auth'
 import { loginApi, getProfileApi } from '@/api/user'
-import { constantRoutes, resetRouter } from '@/router'
+import { constantRoutes } from '@/router'
+import { resetRouter } from '@/router'
 const state = {
   token: getToken(),
   userInfo: {},
@@ -24,8 +25,8 @@ const mutations = {
     state.userInfo = user
   },
   // 设置路由
-  setRoutes(state, routes) {
-    state.routes = [...state.routes, ...routes]
+  setRoutes(state, newRoutes) {
+    state.routes = [...state.routes, ...newRoutes]
   }
 }
 
@@ -51,8 +52,8 @@ const actions = {
     context.commit('setUser', {})
     // 重置路由
     resetRouter()
-    // 强制刷新
-    location.reload()
+    // 重置菜单数据
+    context.state.routes = constantRoutes
   }
 }
 

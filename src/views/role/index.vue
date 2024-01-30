@@ -4,6 +4,7 @@
       <!-- header -->
       <div class="role-operate">
         <el-button
+          v-permission="'add-role'"
           size="mini"
           type="primary"
           @click="showDialog = true"
@@ -63,11 +64,13 @@
             <!-- 非编辑状态 -->
             <template v-else>
               <el-button
+                v-permission="'assign-role'"
                 type="text"
                 size="mini"
                 @click="handleGetPermission(row.id)"
               >分配权限</el-button>
               <el-button
+                v-permission="'edit-role'"
                 type="text"
                 size="mini"
                 @click="handleEdit(row)"
@@ -78,6 +81,7 @@
               >
                 <el-button
                   slot="reference"
+                  v-permission="'delete-role'"
                   style="margin-left: 10px"
                   type="text"
                   size="mini"

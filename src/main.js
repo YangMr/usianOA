@@ -35,6 +35,26 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
+// 自定义指令 (局部 / 全局)
+Vue.directive('permission', {
+  inserted: function(el, binding) {
+    // 1. 先获取当前按钮所绑定的自定义指令的值
+    const currentValue = binding.value
+    console.log('---', currentValue)
+    // 2. 获取接口返回的按钮权限列表
+
+    const permissionList = store.getters.points || []
+    console.log('+++', permissionList)
+    // 3. 判断当前按钮所绑定的自定义指令的值是否存在于按钮权限列表中
+    if (!permissionList.includes(currentValue)) {
+      // console.log('el===>', el)
+      el.remove()
+    }
+
+    // 4. 如果不存在, 则移除当前按钮
+  }
+})
+
 new Vue({
   el: '#app',
   router,

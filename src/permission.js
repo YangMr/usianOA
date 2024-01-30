@@ -33,7 +33,7 @@ router.beforeEach(async(to, from, next) => {
 
         // 匹配出当前用户拥有的路由
         const filterRoutes = asyncRoutes.filter((item) => {
-          return roles.menus.includes(item.name)
+          return roles.menus.includes(item.ident)
         })
 
         store.commit('user/setRoutes', filterRoutes)

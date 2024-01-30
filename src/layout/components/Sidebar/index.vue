@@ -60,3 +60,21 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+a.router-link-exact-active.router-link-active {
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(#205af0),
+    color-stop(25%, #1e3cae),
+    to(rgba(30, 60, 174, 0))
+  ) !important;
+  // background: linear-gradient(
+  //   90deg,
+  //   #205af0,
+  //   #1e3cae 25%,
+  //   rgba(30, 60, 174, 0)
+  // ) !important;
+}
+</style>
