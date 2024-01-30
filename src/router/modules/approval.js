@@ -8,7 +8,7 @@ export default {
     {
       path: '',
       name: 'approval',
-      component: () => import('@/views/approval'),
+      component: () => import('@/views/approval/index.vue'),
       meta: {
         title: '审批',
         icon: 'tree-table'

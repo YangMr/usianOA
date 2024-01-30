@@ -8,7 +8,7 @@ export default {
     {
       path: '',
       name: 'attendance',
-      component: () => import('@/views/attendance'),
+      component: () => import('@/views/attendance/report.vue'),
       meta: {
         title: '考勤',
         icon: 'excel'
