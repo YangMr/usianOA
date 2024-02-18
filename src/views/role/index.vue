@@ -64,7 +64,6 @@
             <!-- 非编辑状态 -->
             <template v-else>
               <el-button
-                v-permission="'assign-role'"
                 type="text"
                 size="mini"
                 @click="handleGetPermission(row.id)"
